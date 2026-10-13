@@ -1,0 +1,20 @@
+{
+  "verified": true,
+  "cases": 500,
+  "method_signature": "06052ba67cdabf61edc890ed204f816ba9a114d555e8720d44bb175a747a5c6a",
+  "spatial_grids": [
+    [
+      16,
+      32
+    ]
+  ],
+  "checks": [
+    "complete unique coverage",
+    "original metadata preserved",
+    "answer consistency",
+    "all occlusion variants",
+    "input RGB SHA256",
+    "finite nonnegative 32-layer 32-head attention",
+    "saved attention mass agreement"
+  ]
+}

@@ -4,12 +4,15 @@ Magma explicit-object grounding and attention analysis on the YeahPick bundle.
 
 ## Status
 
-The 500 explicit-object inputs passed asset SHA256 and swap-label validation.
-All 500 scenes were rendered. The two-case Magma pilot passed checkpoint loading,
-finite-logit checks, visual token-grid checks, and attention-hook prediction
-agreement. The full 500-case attention + occlusion experiment is running on VESSL;
-completion is recorded in `outputs/pipeline_status.json` only after all results
-and summaries exist.
+Completed: **500/500** explicit-object cases (250 pairs, both layouts) on VESSL.
+Free-response selection accuracy: **74.2% (371/500)**; macro category accuracy:
+**77.4%**. No invalid responses. RIGHT was selected in 72.6% of cases.
+All input assets, recorded cases, RGB hashes and saved 32-layer × 32-head attention
+maps passed validation. This is static text selection, not robot action success.
+
+See [the full report](reports/2026-10-14/REPORT.md) and
+[한국어 결과 요약](reports/2026-10-14/결과요약.md).
+Counting/Symmetry explicit-object cases use color cues, not counting/symmetry reasoning.
 
 Repository: https://github.com/hyerin26/Capstone (private).
 
@@ -31,6 +34,8 @@ python scripts/render_scenes.py --bundle /path/to/bundle --yeahpick /root/YeahPi
 python scripts/run_attention.py --checkpoint /path/to/magma --limit 2 --validate-hook --occlusion --output outputs/pilot
 # Only after inspecting and validating the pilot:
 python scripts/run_attention.py --checkpoint /path/to/magma --occlusion
+python scripts/recover_model_prompts.py --checkpoint /path/to/magma
+python scripts/verify_results.py
 python scripts/summarize.py
 python scripts/plot_results.py
 ```
