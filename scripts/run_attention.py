@@ -134,6 +134,7 @@ def summarize_maps(maps, masks):
 def main():
     p=argparse.ArgumentParser()
     p.add_argument('--checkpoint',required=True)
+    p.add_argument('--revision',default='4159b1dedade8f88b5bbaaae7810299dee5228f5')
     p.add_argument('--scenes',default='outputs/scenes')
     p.add_argument('--output',default='outputs/attention')
     p.add_argument('--limit',type=int,default=0)
@@ -141,25 +142,29 @@ def main():
     p.add_argument('--validate-hook',action='store_true')
     a=p.parse_args()
     out=Path(a.output);out.mkdir(parents=True,exist_ok=True)
-    config=AutoConfig.from_pretrained(a.checkpoint,trust_remote_code=True)
+    config=AutoConfig.from_pretrained(a.checkpoint,trust_remote_code=True,code_revision=a.revision)
     config._attn_implementation='eager';config.text_config._attn_implementation='eager'
     model, loading = AutoModelForCausalLM.from_pretrained(a.checkpoint,config=config,
-        trust_remote_code=True,torch_dtype=torch.bfloat16,attn_implementation='eager',
-        device_map='auto',max_memory={i:'20GiB' for i in range(torch.cuda.device_count())},
+        trust_remote_code=True,code_revision=a.revision,torch_dtype=torch.bfloat16,attn_implementation='eager',
+        device_map='auto',max_memory={i:('14GiB' if i==0 and torch.cuda.device_count()>1 else '20GiB') for i in range(torch.cuda.device_count())},
         output_loading_info=True)
     restored=fix_layerscale(model,a.checkpoint,loading)
     model.eval()
-    processor=AutoProcessor.from_pretrained(a.checkpoint,trust_remote_code=True)
+    processor=AutoProcessor.from_pretrained(a.checkpoint,trust_remote_code=True,code_revision=a.revision)
     probe=Probe(model,processor)
     (out/'runtime.json').write_text(json.dumps(dict(torch=torch.__version__,
         loading=loading,restored_layerscale=restored,device_map=model.hf_device_map,
-        checkpoint=a.checkpoint,config=config.to_dict()),indent=2,default=str))
+        checkpoint=a.checkpoint,revision=a.revision,config=config.to_dict()),indent=2,default=str))
+    signature=hashlib.sha256(Path(__file__).read_bytes()+json.dumps(dict(config=config.to_dict(),occlusion=a.occlusion),sort_keys=True,default=str).encode()).hexdigest()
     files=sorted(Path(a.scenes).glob('*/metadata.json'))
     if a.limit: files=files[:a.limit]
     if not files: raise ValueError('No rendered scenes')
     for index,f in enumerate(files):
         meta=json.loads(f.read_text());dest=out/meta['scene_id'];dest.mkdir(exist_ok=True)
-        if (dest/'result.json').exists():continue
+        if (dest/'result.json').exists():
+            previous=json.loads((dest/'result.json').read_text())
+            if previous.get('method_signature')!=signature:raise RuntimeError('Cannot mix different protocols in one output directory')
+            continue
         begin=time.time()
         image=Image.open(f.parent/'rgb.png').convert('RGB')
         masks={s:np.array(Image.open(f.parent/f'{s}_mask.png'))>0 for s in ('left','right')}
@@ -175,7 +180,7 @@ def main():
                                      output_attentions=False,pad_token_id=processor.tokenizer.eos_token_id)
         raw=processor.tokenizer.decode(generated[0,x['input_ids'].shape[1]:],skip_special_tokens=True)
         prediction=parse_side(raw)
-        result.update(meta,raw_response=raw,predicted_side=prediction,valid=prediction is not None,
+        result.update(meta,method_signature=signature,raw_response=raw,predicted_side=prediction,valid=prediction is not None,
                       correct=prediction==meta['answer_side'],candidate_correct=result['candidate_prediction']==meta['answer_side'])
         result.update(summarize_maps(maps,masks))
         np.savez_compressed(dest/'attention.npz',head_maps=maps.astype('float16'))

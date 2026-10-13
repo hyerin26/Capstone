@@ -4,8 +4,41 @@ Magma explicit-object grounding and attention analysis on the YeahPick bundle.
 
 ## Status
 
-Data auditing is implemented. GPU inference and attention extraction are not yet
-implemented or run. GitHub publication and current VESSL connectivity are pending.
+The 500 explicit-object inputs passed asset SHA256 and swap-label validation.
+Scene capture, attention evaluation and CSV reporting are implemented. The
+initial two-layout rendering pilot passed. Full-scene rendering is in progress
+on VESSL; Magma weights are downloading. Model-inference validation and the
+attention experiment are **not yet complete**.
+
+Repository: https://github.com/hyerin26/Capstone (private).
+
+## Execution
+
+The renderer requires the existing YeahPick checkout (tested source commit
+`26cc321d3e4cbbc68225f7304f144f46bbbf5519`) and its working ManiSkill environment.
+Magma runs in a separate venv with inherited PyTorch 2.2.0+cu121 and Transformers
+4.47.0. Added dependencies: open_clip_torch 2.26.1 and ftfy 6.3.1.
+The new VESSL container needed `libgl1` and `libvulkan1` reinstalled.
+Magma source/weight target revision: `4159b1dedade8f88b5bbaaae7810299dee5228f5`.
+
+```sh
+source scripts/server_env.sh
+python scripts/render_scenes.py --bundle /path/to/bundle --yeahpick /root/YeahPick
+python scripts/run_attention.py --checkpoint /path/to/magma --limit 2 --validate-hook --occlusion --output outputs/pilot
+# Only after inspecting and validating the pilot:
+python scripts/run_attention.py --checkpoint /path/to/magma --occlusion
+python scripts/summarize.py
+```
+
+`outputs/scenes/<id>/` contains RGB, actor-ID masks and metadata.
+`outputs/attention/<id>/` contains results, per-head spatial attention and a
+five-layer heatmap panel. CSV results preserve invalid free responses separately
+from forced candidate ranking. All-layer means are fixed in advance; layers
+1/8/16/24/32 are visualization panels, not selected based on test success.
+Masks cover the candidate tiles; they do not identify the object inside a photo.
+Occlusion fills a whole tile with gray. The background control uses equal-area
+scattered pixels and therefore differs in topology; interpret it as a diagnostic,
+not a definitive causal test. Pair-cluster bootstrap intervals use 2,000 draws.
 
 ## Data validation
 
