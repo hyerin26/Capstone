@@ -44,6 +44,8 @@ USE_TF=0 .venv/bin/python scripts/run_attention.py \
 # Inspect the pilot before the full run.
 USE_TF=0 .venv/bin/python scripts/run_attention.py \
   --checkpoint weights/magma --occlusion --output outputs/new-run
+.venv/bin/python scripts/recover_model_prompts.py --results outputs/new-run
+.venv/bin/python scripts/verify_results.py --results outputs/new-run
 .venv/bin/python scripts/summarize.py --results outputs/new-run
 .venv/bin/python scripts/plot_results.py --results outputs/new-run
 ```
@@ -60,7 +62,7 @@ independent data. The supplied 500 cases include both layouts of 250 pairs.
 - `categories.csv`: category aggregates and pair-bootstrap confidence intervals.
 - `layers.csv`: every layer's regional attention summaries by category.
 - `figures/`: accuracy/occlusion charts, layer matrix and fixed-selection examples.
-- `<scene-id>/result.json`: complete prompt, answer, configuration-related signature.
+- `<scene-id>/result.json`: source prompt, exact input IDs, decoded model input, answer and method signature.
 - `<scene-id>/attention.npz`: layer × head × height × width spatial attention.
 
 This evaluates selection in a text response, not robot action success. Masks mark

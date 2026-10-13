@@ -37,6 +37,9 @@ Reconstruct the crop grid from actual projector shape and image_sizes. Remove
 one row-separator token per spatial row. Assert expanded sequence length and
 attention-row sums. Save spatial head maps rather than all attention matrices.
 Only the current crop-based Magma layout is supported; fail on unfamiliar layouts.
+The validated 640x480 camera views produce a 16x32 spatial feature grid.
+ConvNeXt cells have overlapping receptive fields; mapping cells to tile pixels is
+a spatial approximation, not pixel-level object segmentation.
 Report total spatial-image attention alongside region-conditioned fractions.
 
 Ground-truth masks are renderer actor-ID masks of whole candidate tiles. They
