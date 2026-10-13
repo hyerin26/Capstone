@@ -52,6 +52,10 @@ def main():
             target_minus_distractor_density=statistics.mean(r['target_attention_density']-r['distractor_attention_density'] for r in rs),n=n,correct=sum(r['correct'] for r in rs),
             accuracy=sum(r['correct'] for r in rs)/n,invalid=sum(not r['valid'] for r in rs),
             candidate_accuracy=sum(r['candidate_correct'] for r in rs)/n,
+            predicted_left=sum(r['predicted_side']=='left' for r in rs),
+            predicted_right=sum(r['predicted_side']=='right' for r in rs),
+            both_layouts_correct=sum(all(r['correct'] for r in v) for v in complete),
+            both_layouts_correct_rate=sum(all(r['correct'] for r in v) for v in complete)/len(complete) if complete else None,
             completed_swap_pairs=len(complete),swap_consistency=consistent/len(complete) if complete else None))
     with (root/'categories.csv').open('w',encoding='utf-8-sig',newline='') as f:
         w=csv.DictWriter(f,fieldnames=list(stats[0]));w.writeheader();w.writerows(stats)
@@ -66,11 +70,16 @@ def main():
                 target_peak_hit=statistics.mean(r[r['answer_side']+'_peak_hit_by_layer'][layer] for r in rs)))
     with (root/'layers.csv').open('w',encoding='utf-8-sig',newline='') as f:
         w=csv.DictWriter(f,fieldnames=list(layer_rows[0]));w.writeheader();w.writerows(layer_rows)
-    summary=dict(completed=len(rows),micro_accuracy=sum(r['correct'] for r in rows)/len(rows),
+    summary=dict(completed=len(rows),invalid=sum(not r['valid'] for r in rows),
+                 predicted_left=sum(r['predicted_side']=='left' for r in rows),
+                 predicted_right=sum(r['predicted_side']=='right' for r in rows),
+                 candidate_accuracy=sum(r['candidate_correct'] for r in rows)/len(rows),
+                 micro_accuracy=sum(r['correct'] for r in rows)/len(rows),
                  macro_accuracy=sum(r['accuracy'] for r in stats)/len(stats),categories=stats)
     (root/'summary.json').write_text(json.dumps(summary,indent=2))
     report=['# Magma explicit-object grounding results', '',
-        f"Completed: {len(rows)} cases. Micro accuracy: {summary['micro_accuracy']:.1%}; macro accuracy: {summary['macro_accuracy']:.1%}.", '',
+        f"Completed: {len(rows)} cases. Micro accuracy: {summary['micro_accuracy']:.1%}; macro accuracy: {summary['macro_accuracy']:.1%}.",
+        f"Candidate-ranking accuracy: {summary['candidate_accuracy']:.1%}. Invalid responses: {summary['invalid']}. Valid choices: LEFT {summary['predicted_left']}, RIGHT {summary['predicted_right']}.", '',
         '| Category | N | Accuracy | 95% pair-bootstrap CI | Candidate accuracy | Invalid | Swap consistency |',
         '|---|---:|---:|---:|---:|---:|---:|']
     for r in stats:
