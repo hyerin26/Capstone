@@ -1,0 +1,13 @@
+# Runtime validated using the pre-existing VESSL torch environment.
+# Do not install over the existing robot environment; use a separate venv.
+torch==2.2.0
+torchvision==0.17.0
+transformers==4.47.0
+open_clip_torch==2.26.1
+timm==0.9.10
+ftfy==6.3.1
+huggingface_hub==0.36.2
+numpy<2
+Pillow>=10
+safetensors
+accelerate

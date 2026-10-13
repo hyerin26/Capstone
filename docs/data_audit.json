@@ -1,0 +1,17 @@
+{
+  "cases": 500,
+  "unique_pairs": 250,
+  "checked_glbs": 278,
+  "categories": {
+    "attribute": 40,
+    "celebrity": 100,
+    "counting": 20,
+    "emotion": 20,
+    "living_world": 100,
+    "public_info": 20,
+    "state": 60,
+    "symmetry": 20,
+    "time_clock": 20,
+    "traffic": 100
+  }
+}
