@@ -30,7 +30,19 @@ def fix_layerscale(model, checkpoint, loading):
                         remap[target] = sf.get_tensor(key)
     if remap:
         model.load_state_dict(remap, strict=False)
-    missing = set(loading.get('missing_keys', [])) - set(remap)
+    # Magma's dense encoder calls only trunk.stem and trunk.stages. The CLIP
+    # pooled-classification heads are not in its checkpoint or inference path.
+    unused={'vision_tower.clip_vision_model.head.proj.weight',
+            'vision_tower.clip_vision_model.trunk.head.norm.weight',
+            'vision_tower.clip_vision_model.trunk.head.norm.bias'}
+    def reject_unused_head(module, inputs):
+        raise RuntimeError('Untrained CLIP pooling head unexpectedly entered inference')
+    model.vision_tower.clip_vision_model.head.register_forward_pre_hook(reject_unused_head)
+    model.vision_tower.clip_vision_model.trunk.head.register_forward_pre_hook(reject_unused_head)
+    loading['excluded_unused_head_keys']=sorted(set(loading.get('missing_keys',[])) & unused)
+    missing = set(loading.get('missing_keys', [])) - set(remap) - unused
+    unexpected=set(loading.get('unexpected_keys',[])) - {re.sub(r'\.gamma$', '.weight', k) for k in remap}
+    if unexpected:raise RuntimeError(f'Unexpected checkpoint parameters: {unexpected}')
     if missing or loading.get('mismatched_keys'):
         raise RuntimeError(f'Unresolved checkpoint weights: {missing}, {loading.get("mismatched_keys")}')
     return sorted(remap)
@@ -84,7 +96,7 @@ class Probe:
         scores = {s:float(logits.log_softmax(-1)[v[0]].item()) for s,v in labels.items()}
         first_id = int(logits.argmax())
         raw = self.processor.tokenizer.decode([first_id], skip_special_tokens=True)
-        data = dict(scores=scores, candidate_prediction=max(scores, key=scores.get()).lower(),
+        data = dict(scores=scores, candidate_prediction=max(scores, key=scores.get).lower(),
                     first_token_id=first_id, first_token=raw, prompt=prompt,
                     input_ids=x['input_ids'][0].cpu().tolist(), image_sizes=x['image_sizes'].cpu().tolist())
         if capture:
@@ -144,11 +156,24 @@ def main():
     out=Path(a.output);out.mkdir(parents=True,exist_ok=True)
     config=AutoConfig.from_pretrained(a.checkpoint,trust_remote_code=True,code_revision=a.revision)
     config._attn_implementation='eager';config.text_config._attn_implementation='eager'
+    # Official image-tower code downloads CLIP even with require_pretrained=False.
+    # Skip only that unused weight download; still load its exact architecture JSON.
+    # All Magma weights are checked below, so random missing weights cannot pass.
+    import open_clip.pretrained
+    original_download=open_clip.pretrained.download_pretrained_from_hf
+    def architecture_only(model_id, *args, **kwargs):
+        if model_id=='laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg' and not args and kwargs.get('filename') is None:
+            return None
+        return original_download(model_id,*args,**kwargs)
+    open_clip.pretrained.download_pretrained_from_hf=architecture_only
+    print('Loading complete Magma checkpoint (unused CLIP weight download skipped)',flush=True)
     model, loading = AutoModelForCausalLM.from_pretrained(a.checkpoint,config=config,
         trust_remote_code=True,code_revision=a.revision,torch_dtype=torch.bfloat16,attn_implementation='eager',
         device_map='auto',max_memory={i:('14GiB' if i==0 and torch.cuda.device_count()>1 else '20GiB') for i in range(torch.cuda.device_count())},
         output_loading_info=True)
+    open_clip.pretrained.download_pretrained_from_hf=original_download
     restored=fix_layerscale(model,a.checkpoint,loading)
+    print('Magma loaded; checkpoint keys validated',flush=True)
     model.eval()
     processor=AutoProcessor.from_pretrained(a.checkpoint,trust_remote_code=True,code_revision=a.revision)
     probe=Probe(model,processor)

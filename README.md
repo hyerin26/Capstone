@@ -5,10 +5,11 @@ Magma explicit-object grounding and attention analysis on the YeahPick bundle.
 ## Status
 
 The 500 explicit-object inputs passed asset SHA256 and swap-label validation.
-Scene capture, attention evaluation and CSV reporting are implemented. The
-initial two-layout rendering pilot and all 500 scene captures passed on VESSL.
-Magma weights are downloading. Model-inference validation and the
-attention experiment are **not yet complete**.
+All 500 scenes were rendered. The two-case Magma pilot passed checkpoint loading,
+finite-logit checks, visual token-grid checks, and attention-hook prediction
+agreement. The full 500-case attention + occlusion experiment is running on VESSL;
+completion is recorded in `outputs/pipeline_status.json` only after all results
+and summaries exist.
 
 Repository: https://github.com/hyerin26/Capstone (private).
 
@@ -19,6 +20,9 @@ The renderer requires the existing YeahPick checkout (tested source commit
 Magma runs in a separate venv with inherited PyTorch 2.2.0+cu121 and Transformers
 4.47.0. Added dependencies: open_clip_torch 2.26.1 and ftfy 6.3.1.
 The new VESSL container needed `libgl1` and `libvulkan1` reinstalled.
+The loader skips an unused CLIP weight download, restores checkpoint LayerScale
+parameters renamed by Transformers, and rejects unresolved inference weights.
+Three unused CLIP pooling-head parameters are guarded against accidental execution.
 Magma source/weight target revision: `4159b1dedade8f88b5bbaaae7810299dee5228f5`.
 
 ```sh
