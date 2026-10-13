@@ -1,0 +1,8 @@
+﻿comparison,treatment,control,accuracy_difference,ci_low,ci_high,n_pairs
+presentation_unmarked,equal_lr,original_lr,0.08,0.048,0.114,250
+marks_original,original_marked_lr,original_lr,-0.009,-0.026,0.009,250
+marks_equal,equal_marked_lr,equal_lr,0.021,0.0,0.042,250
+response_original_identical_pixels,original_ab,original_marked_lr,0.045,0.018,0.071,250
+response_equal_identical_pixels,equal_ab,equal_marked_lr,0.023,0.006,0.04102499999999987,250
+presentation_ab,equal_ab,original_ab,0.088,0.061,0.117,250
+combined,equal_ab,original_lr,0.124,0.091,0.156,250

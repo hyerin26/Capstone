@@ -88,3 +88,9 @@ outcomes. Store full attention matrices only when necessary for memory reasons.
 
 See [RUN_ON_VESSL.md](docs/RUN_ON_VESSL.md) for the configured environment paths,
 progress checks and result files.
+
+## Completed follow-ups (2026-10-14)
+
+Both follow-ups completed: 500 existing scenes, 6,500 generated answers across scoring/occlusion and presentation/response controls. Original baseline responses reproduced 500/500. Actual accuracy rose from 74.2% (original LEFT/RIGHT) to 86.6% (equalized A/B); the paired difference is +12.4 percentage points, 95% CI [9.1, 15.6]. These are repeated text-selection measurements, not robot action trials.
+
+See the [Korean analysis report](reports/followup-2026-10-14/REPORT.md), [all 6,500 responses](reports/followup-2026-10-14/generations.csv), [raw records](reports/followup-2026-10-14/raw_records.jsonl.gz), [protocol](docs/followup/PROTOCOL.md), and [reproduction instructions](docs/followup/REPRODUCE.md).

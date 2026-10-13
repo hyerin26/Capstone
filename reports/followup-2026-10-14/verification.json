@@ -1,0 +1,29 @@
+{
+  "cases": 500,
+  "generations": 6500,
+  "method_signature": "3f75df2f94cf2de6ea9fa96a93350ded19e745e3c946c7ab6913a5d257c999dc",
+  "baseline_raw_agreement_count": 500,
+  "baseline_uppercase_max_difference": 7.152557373046875e-07,
+  "native_pixel_shapes": [
+    [
+      1,
+      2,
+      3,
+      512,
+      512
+    ]
+  ],
+  "native_image_sizes": [
+    [
+      [
+        [
+          1,
+          2
+        ]
+      ]
+    ]
+  ],
+  "min_quad_mask_iou": 0.9075061988128335,
+  "mean_original_right_to_left_tile_area": 1.7784499603508994,
+  "identical_marked_pixels_verified": true
+}

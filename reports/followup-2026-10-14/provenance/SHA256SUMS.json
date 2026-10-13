@@ -1,0 +1,8 @@
+{
+  "scripts/followup/prepare_inputs.py": "dd316e522fa67150b858961d8e324ef3879920fa9223266c22e30e4c60a94edc",
+  "scripts/followup/run.py": "197c28f4b59a4e773ff34e0c7728014233cde624be00ca93c8e0a1815374f9ca",
+  "scripts/followup/launch.py": "47320dcc39360d75044f6f7a1714c10c7749ff76ec513dc5c2004f0bf70ac5a4",
+  "scripts/followup/summarize.py": "9f47b8e3e4bd96756688954ecb70e9190b51f504b7a4fe0afb73cab96d1af985",
+  "scripts/followup/plot.py": "cff89709d4f531fe9cd51cd5081207e70de32d04df0d0591fd69504c24c738b2",
+  "scripts/run_attention.py": "c4bd641e8b79ccd48a8b1e1511c6fab9302fb454555dee9a053df4731d39ac0b"
+}

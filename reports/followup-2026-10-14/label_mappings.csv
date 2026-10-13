@@ -1,0 +1,5 @@
+﻿condition,n_scenes,physical_side_consistency,both_mappings_correct,always_A_rate,always_B_rate
+original_marked_lr,500,0.966,0.716,,
+equal_marked_lr,500,0.97,0.828,,
+original_ab,500,0.74,0.648,0.016,0.244
+equal_ab,500,0.92,0.826,0.05,0.03
