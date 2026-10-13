@@ -32,6 +32,7 @@ python scripts/run_attention.py --checkpoint /path/to/magma --limit 2 --validate
 # Only after inspecting and validating the pilot:
 python scripts/run_attention.py --checkpoint /path/to/magma --occlusion
 python scripts/summarize.py
+python scripts/plot_results.py
 ```
 
 `outputs/scenes/<id>/` contains RGB, actor-ID masks and metadata.
@@ -79,3 +80,6 @@ mass, region-area-corrected attention density, and target/distractor/background
 occlusion score changes. Attention alone is not evidence of causal recognition.
 Pilot before full evaluation; freeze analysis choices before inspecting full-run
 outcomes. Store full attention matrices only when necessary for memory reasons.
+
+See [RUN_ON_VESSL.md](docs/RUN_ON_VESSL.md) for the configured environment paths,
+progress checks and result files.

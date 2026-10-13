@@ -11,3 +11,4 @@ numpy<2
 Pillow>=10
 safetensors
 accelerate
+matplotlib==3.10.9
