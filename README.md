@@ -6,8 +6,8 @@ Magma explicit-object grounding and attention analysis on the YeahPick bundle.
 
 The 500 explicit-object inputs passed asset SHA256 and swap-label validation.
 Scene capture, attention evaluation and CSV reporting are implemented. The
-initial two-layout rendering pilot passed. Full-scene rendering is in progress
-on VESSL; Magma weights are downloading. Model-inference validation and the
+initial two-layout rendering pilot and all 500 scene captures passed on VESSL.
+Magma weights are downloading. Model-inference validation and the
 attention experiment are **not yet complete**.
 
 Repository: https://github.com/hyerin26/Capstone (private).
@@ -32,7 +32,8 @@ python scripts/summarize.py
 
 `outputs/scenes/<id>/` contains RGB, actor-ID masks and metadata.
 `outputs/attention/<id>/` contains results, per-head spatial attention and a
-five-layer heatmap panel. CSV results preserve invalid free responses separately
+five-layer heatmap panel. The summary exports cases.csv, categories.csv, layers.csv
+and REPORT.md. CSV results preserve invalid free responses separately
 from forced candidate ranking. All-layer means are fixed in advance; layers
 1/8/16/24/32 are visualization panels, not selected based on test success.
 Masks cover the candidate tiles; they do not identify the object inside a photo.
