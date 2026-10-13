@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+data/
+outputs/
+weights/
+logs/
+.auth/
+.DS_Store
+
+.known_hosts
