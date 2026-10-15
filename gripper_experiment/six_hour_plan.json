@@ -1,0 +1,46 @@
+{
+  "requested_at_unix": 1792053089,
+  "deadline_unix": 1792074689,
+  "test_case_indices": [
+    4,
+    5,
+    14,
+    15,
+    24,
+    25,
+    34,
+    35,
+    44,
+    45,
+    54,
+    55,
+    64,
+    65,
+    78,
+    79,
+    88,
+    89,
+    98,
+    99
+  ],
+  "conditions": [
+    "baseline",
+    "gripper_0.5",
+    "gripper_1",
+    "gripper_2",
+    "background_0.5",
+    "background_1",
+    "background_2",
+    "cube_1"
+  ],
+  "existing_worker_pid": 8049,
+  "launcher_pid": null,
+  "expected_test_rollouts": 160,
+  "expected_validation_fixed": 320,
+  "selection": "First preselected test pair in each category; both layouts; no outcome-based selection",
+  "deferred_conditions": [
+    "gripper_1_transport",
+    "gripper_1_placement"
+  ],
+  "original_plan_preserved": true
+}

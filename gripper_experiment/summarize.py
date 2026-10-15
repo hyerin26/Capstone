@@ -56,7 +56,7 @@ lines=['# 그리퍼 attention 개입 실험','',f'현재 기록: {len(rows)}개.
        '원본 Act2Answer의 success는 큐브가 타일 위쪽에 있는지만 검사하며, 놓기·높이 상한·안정성을 보장하지 않습니다. 그래서 released_stable_correct_5_steps를 주 지표로 추가했습니다.',
        '그리퍼/큐브는 이미 잡은 초기 상태에서 시작합니다. 처음 집기 능력을 평가하지 않습니다. 행동 토큰 전체가 유효하지 않으면 실패로 기록하며 임의의 텍스트 토큰을 행동으로 변환하지 않습니다.',
        '개입은 모든 레이어/head에서 마지막 프롬프트 및 생성 query의 이미지 key에만 적용합니다. 이미지 토큰 표현 자체와 이전 프롬프트 query는 변경하지 않습니다.',
-       '검증/평가 분리는 원본 pair 단위입니다. 2,000회 bootstrap은 좌우 장면을 같은 pair로 묶습니다. 카테고리당 평가 pair 3개이므로 카테고리별 확정적 주장은 피해야 합니다.','',
+       '검증/평가 분리는 원본 pair 단위입니다. 2,000회 bootstrap은 좌우 장면을 같은 pair로 묶습니다. 평가 표본 수는 plan.json과 six_hour_plan.json을 확인하세요. 카테고리별 확정적 주장은 피해야 합니다.','',
        '| 조건 | 완료된 평가 pair | 성공률 차이 | 95% CI |','|---|---:|---:|---|']
 for r in summary:lines.append(f"| {r['condition']} | {r['complete_pairs']} | {r['strict_success_difference']:+.1%} | [{r['ci_low']:+.1%}, {r['ci_high']:+.1%}] |")
 lines += ['', '## 동일 관측에서의 행동 및 attention 변화', '', '| Split | 조건 | 사례 수 | 그리퍼 attention 비중 변화 | 이동 출력 차이 (m) |', '|---|---|---:|---:|---:|']
@@ -70,6 +70,10 @@ for split in ['pilot','validation']:
   fixed_summary.append(entry)
   lines.append(f"| {split} | {cond} | {len(valid)} | {entry['mean_gripper_fraction_change']:+.4f} | {entry['mean_translation_delta_norm']:.5f} |")
 (DEST/'fixed_summary.json').write_text(json.dumps(fixed_summary,indent=2))
+budget_path=ROOT/'six_hour_plan.json'
+if budget_path.exists():
+ budget=json.loads(budget_path.read_text())
+ lines += ['', '## 사용자 요청에 따른 6시간 축소 실행', '', '본 평가는 10개 카테고리 각 1쌍, 좌우 20장면 × 핵심 8조건 = 최대 160회입니다. 운반/배치 단계별 추가 조건은 제외했습니다.', '시간 상한 도달 시 실행을 종료합니다. 완료된 episode만 집계하며, 양쪽 배치가 있는 pair만 신뢰구간에 포함합니다. 원래 600회 계획의 완료를 뜻하지 않습니다.', f"서버 종료 상한 Unix time: {budget['deadline_unix']}. 상태는 status.json을 확인하세요."]
 (DEST/'REPORT.md').write_text('\n'.join(lines)+'\n')
 # Fixed pilot example selected by case ID, irrespective of success.
 pilots=sorted([r for r in raw if r['case']['split']=='pilot' and r['mode']=='fixed'],key=lambda r:r['case']['case_id'])

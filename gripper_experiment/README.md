@@ -85,3 +85,17 @@ Large raw outputs and queues are excluded from Git; source, plan and reports are
 Any environment failure stops the launcher with a recorded traceback. An invalid
 model action is recorded as a failed episode. No outcomes are used to choose heads,
 layers, sample membership or phase-ablation strength.
+
+## User-requested six-hour revision (2026-10-15)
+
+`six_hour_plan.json` overrides the original sample count: one originally selected
+test pair per category, both layouts, core eight conditions = at most 160 test
+rollouts. Phase-specific gripper ablations are deferred. Original plan/results
+are preserved. `launch_bounded.py` resumes after the active pilot worker, runs
+320 fixed validation cases then the reduced test. Deadline: 2026-10-15 23:31:29
+Asia/Seoul (1792074689). It stops earlier if the reduced plan completes. A separate
+`deadline_guard.py` terminates only registered experiment processes at the deadline.
+Partial steps remain on disk; only finished episode records are summarized and
+only complete mirrored pairs enter bootstrap intervals. This reduced study has
+only 10 independent test pairs, so it is exploratory and category conclusions
+are unsupported. No VESSL workspace shutdown is performed.
