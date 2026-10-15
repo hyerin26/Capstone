@@ -1,0 +1,7 @@
+__pycache__/
+queue/
+logs/
+outputs/
+outputs_v1/
+*.log
+pipeline.lock
